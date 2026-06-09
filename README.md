@@ -1,4 +1,4 @@
-# eComputing 2026 · Check-in profesional v3.1
+# eComputing 2026 · Check-in profesional v3.3
 
 App sencilla y profesional para registrar asistencia en las X Jornadas sobre la Enseñanza de la Informática en la FP a distancia.
 
@@ -24,8 +24,9 @@ La web estática está en `docs/`. El backend de Apps Script está en `apps_scri
 5. Confirmar el asistente.
 6. Pulsar `Registrar jueves 2` o `Registrar viernes 3`.
 7. La app evita duplicados y actualiza la hoja.
+8. Pulsar sobre los contadores de jueves o viernes para consultar la lista de asistentes registrados ese día.
 
-La URL de la API no aparece en pantalla. Se configura una vez en `docs/config.js`.
+La URL de la API no aparece en pantalla. Se configura una vez en `docs/config.js`. Los contadores de jueves y viernes son pulsables y permiten consultar la lista de personas registradas cada día.
 
 ## Formato de la hoja `Asistentes`
 
@@ -97,7 +98,7 @@ window.ECOMPUTING_CONFIG = {
 
 Para versionar la app:
 
-1. Crear tag, por ejemplo `v3.1.0`.
+1. Crear tag, por ejemplo `v3.3.0`.
 2. Crear una GitHub Release.
 3. Adjuntar el ZIP del paquete.
 4. Seguir usando GitHub Pages para la URL de uso en recepción.
