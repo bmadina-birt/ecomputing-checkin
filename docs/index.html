@@ -14,18 +14,18 @@
 </head>
 <body>
   <div class="appShell">
-    <header class="hero">
-      <div class="hero__brand">
-        <div class="brandMark" aria-hidden="true">eC</div>
-        <div>
-          <p class="eyebrow">eComputing 2026</p>
-          <h1>Check-in de asistentes</h1>
-          <p class="subtitle">X Jornadas sobre la Enseñanza de la Informática en la FP a distancia</p>
-        </div>
+    <header class="hero hero--corp">
+      <div class="hero__logos" aria-label="Identidad del evento">
+        <img src="./assets/logo-ecomputing.png" alt="eComputing" class="heroLogo heroLogo--eco">
+        <img src="./assets/logo-birtlh.png" alt="BIRTLH" class="heroLogo heroLogo--birtlh">
       </div>
-      <div class="hero__meta">
-        <span>Vitoria-Gasteiz</span>
-        <span>2 y 3 de julio</span>
+      <div class="hero__center">
+        <p class="eyebrow">eComputing 2026 · Check-in</p>
+        <h1 class="heroTitle">X Jornadas sobre la Enseñanza de la Informática <span>en la FP a distancia</span></h1>
+        <div class="hero__meta">
+          <span>Vitoria-Gasteiz</span>
+          <span>2 y 3 de julio</span>
+        </div>
       </div>
     </header>
 
@@ -168,18 +168,38 @@
             <span>Total</span>
             <strong id="sumTotal">—</strong>
           </div>
-          <div class="summaryItem">
+          <button id="sumJuevesBtn" class="summaryItem summaryItem--button" type="button" title="Ver asistentes registrados el jueves">
             <span>Jueves</span>
             <strong id="sumJueves">—</strong>
-          </div>
-          <div class="summaryItem">
+            <small>Ver lista</small>
+          </button>
+          <button id="sumViernesBtn" class="summaryItem summaryItem--button" type="button" title="Ver asistentes registrados el viernes">
             <span>Viernes</span>
             <strong id="sumViernes">—</strong>
-          </div>
+            <small>Ver lista</small>
+          </button>
           <button id="refreshSummaryBtn" class="btn btn--ghost" type="button">Actualizar resumen</button>
         </section>
       </section>
     </main>
+  </div>
+
+  <div id="attendanceModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="attendanceTitle">
+    <div class="modal__backdrop" id="attendanceBackdrop"></div>
+    <div class="modal__panel card">
+      <div class="sectionTitle">
+        <div>
+          <p class="eyebrow">Asistentes registrados</p>
+          <h2 id="attendanceTitle">Lista</h2>
+        </div>
+        <span id="attendanceCount" class="badge badge--muted">0</span>
+      </div>
+      <div id="attendanceList" class="attendanceList" aria-live="polite"></div>
+      <div class="actions">
+        <button id="attendanceRefreshBtn" class="btn btn--secondary" type="button">Actualizar lista</button>
+        <button id="attendanceCloseBtn" class="btn btn--ghost" type="button">Cerrar</button>
+      </div>
+    </div>
   </div>
 </body>
 </html>

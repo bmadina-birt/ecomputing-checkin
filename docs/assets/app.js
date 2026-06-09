@@ -36,7 +36,16 @@
     sumTotal: $('sumTotal'),
     sumJueves: $('sumJueves'),
     sumViernes: $('sumViernes'),
-    refreshSummaryBtn: $('refreshSummaryBtn')
+    sumJuevesBtn: $('sumJuevesBtn'),
+    sumViernesBtn: $('sumViernesBtn'),
+    refreshSummaryBtn: $('refreshSummaryBtn'),
+    attendanceModal: $('attendanceModal'),
+    attendanceBackdrop: $('attendanceBackdrop'),
+    attendanceTitle: $('attendanceTitle'),
+    attendanceCount: $('attendanceCount'),
+    attendanceList: $('attendanceList'),
+    attendanceRefreshBtn: $('attendanceRefreshBtn'),
+    attendanceCloseBtn: $('attendanceCloseBtn')
   };
 
   const state = {
@@ -50,7 +59,8 @@
     scannerPaused: false,
     lastScanAt: 0,
     currentAttendee: null,
-    lastMessageTimer: null
+    lastMessageTimer: null,
+    activeListDay: ''
   };
 
   function init() {
@@ -107,6 +117,12 @@
     els.checkinBtn.addEventListener('click', registerCurrent);
     els.continueBtn.addEventListener('click', nextAttendee);
     els.refreshSummaryBtn.addEventListener('click', refreshSummary);
+    els.sumJuevesBtn.addEventListener('click', () => openAttendanceList('jueves'));
+    els.sumViernesBtn.addEventListener('click', () => openAttendanceList('viernes'));
+    els.attendanceRefreshBtn.addEventListener('click', () => { if (state.activeListDay) openAttendanceList(state.activeListDay); });
+    els.attendanceCloseBtn.addEventListener('click', closeAttendanceList);
+    els.attendanceBackdrop.addEventListener('click', closeAttendanceList);
+    window.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') closeAttendanceList(); });
     els.cameraSelect.addEventListener('change', () => {
       state.selectedCamera = els.cameraSelect.value;
       savePrefs();
@@ -435,6 +451,7 @@
       }
       renderAttendee(res.attendee);
       await refreshSummary(false);
+      if (state.activeListDay) openAttendanceList(state.activeListDay);
       if (res.duplicate) {
         showMessage(res.message + (res.previous_time ? ' · ' + res.previous_time : ''), 'warn');
       } else {
@@ -482,6 +499,70 @@
     } catch (err) {
       if (showErrors) showMessage('Error al actualizar resumen: ' + err.message, 'err');
     }
+  }
+
+
+  async function openAttendanceList(day) {
+    state.activeListDay = day;
+    els.attendanceModal.classList.remove('hidden');
+    els.attendanceTitle.textContent = day === 'jueves' ? 'Jueves 2 de julio' : 'Viernes 3 de julio';
+    els.attendanceCount.textContent = 'cargando';
+    els.attendanceCount.className = 'badge badge--warn';
+    els.attendanceList.innerHTML = '<p class="helpText">Cargando lista...</p>';
+
+    try {
+      const res = await api('listByDay', { day });
+      if (!res.ok) {
+        els.attendanceCount.textContent = 'error';
+        els.attendanceCount.className = 'badge badge--err';
+        els.attendanceList.innerHTML = `<p class="helpText">${escapeHtml(res.error || 'No se ha podido cargar la lista.')}</p>`;
+        return;
+      }
+      renderAttendanceList(res.day, res.count, res.attendees || []);
+    } catch (err) {
+      els.attendanceCount.textContent = 'error';
+      els.attendanceCount.className = 'badge badge--err';
+      els.attendanceList.innerHTML = `<p class="helpText">Error al cargar la lista: ${escapeHtml(err.message)}</p>`;
+    }
+  }
+
+  function closeAttendanceList() {
+    if (!els.attendanceModal.classList.contains('hidden')) {
+      els.attendanceModal.classList.add('hidden');
+      state.activeListDay = '';
+    }
+  }
+
+  function renderAttendanceList(dayLabel, count, attendees) {
+    els.attendanceTitle.textContent = dayLabel ? capitalizeFirst(dayLabel) : 'Lista';
+    els.attendanceCount.textContent = String(count || 0);
+    els.attendanceCount.className = 'badge badge--ok';
+
+    if (!attendees.length) {
+      els.attendanceList.innerHTML = '<div class="emptyList">Todavía no hay asistentes registrados para este día.</div>';
+      return;
+    }
+
+    els.attendanceList.innerHTML = '';
+    attendees.forEach((item, idx) => {
+      const div = document.createElement('div');
+      div.className = 'attendanceItem';
+      div.innerHTML = `
+        <div class="attendanceItem__number">${idx + 1}</div>
+        <div class="attendanceItem__main">
+          <strong>${escapeHtml([item.nombre, item.apellidos].filter(Boolean).join(' '))}</strong>
+          <span>${escapeHtml(item.institucion || 'Sin institución')}</span>
+          <small>${escapeHtml([item.hora, item.operador].filter(Boolean).join(' · '))}</small>
+        </div>
+        <code>${escapeHtml(item.codigo_qr || '')}</code>
+      `;
+      els.attendanceList.appendChild(div);
+    });
+  }
+
+  function capitalizeFirst(text) {
+    const s = String(text || '');
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
   }
 
   function setBusy(busy) {
