@@ -1,0 +1,3 @@
+codigo_qr,token,nombre,apellidos,institucion,email,checkin_jueves,hora_jueves,operador_jueves,checkin_viernes,hora_viernes,operador_viernes,observaciones
+XJ-BIRTLH-0001,DEMO2026,Joan Carles,Pérez Vázquez,Generalitat de Catalunya,jperez14@xtec.cat,,,,,,,Asistente de prueba
+XJ-BIRTLH-0002,TEST2026,Ane,García López,CIFP de Aprendizajes Virtuales y Digitalizados,ane@example.com,,,,,,,Asistente de prueba

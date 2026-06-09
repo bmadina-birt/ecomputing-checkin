@@ -1,0 +1,16 @@
+{
+  "name": "eComputing 2026 Check-in",
+  "short_name": "eComputing",
+  "description": "Check-in de asistentes para eComputing 2026",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#eef4f7",
+  "theme_color": "#254b63",
+  "icons": [
+    {
+      "src": "./assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

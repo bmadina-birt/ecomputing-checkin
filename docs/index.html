@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#254b63">
+  <meta name="description" content="App de check-in para eComputing 2026">
+  <title>eComputing 2026 · Check-in</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./assets/app.css">
+  <script src="./config.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" defer></script>
+  <script src="./assets/app.js" defer></script>
+</head>
+<body>
+  <div class="appShell">
+    <header class="hero">
+      <div class="hero__brand">
+        <div class="brandMark" aria-hidden="true">eC</div>
+        <div>
+          <p class="eyebrow">eComputing 2026</p>
+          <h1>Check-in de asistentes</h1>
+          <p class="subtitle">X Jornadas sobre la Enseñanza de la Informática en la FP a distancia</p>
+        </div>
+      </div>
+      <div class="hero__meta">
+        <span>Vitoria-Gasteiz</span>
+        <span>2 y 3 de julio</span>
+      </div>
+    </header>
+
+    <main class="content">
+      <section id="setupPanel" class="setupPanel card">
+        <div class="sectionTitle">
+          <div>
+            <p class="eyebrow">Configuración inicial</p>
+            <h2>Preparar recepción</h2>
+          </div>
+          <span class="statusDot" id="apiHealthDot">API</span>
+        </div>
+
+        <div class="formGrid">
+          <label class="field">
+            <span>PIN</span>
+            <input id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN de recepción">
+          </label>
+          <label class="field">
+            <span>Operador/a</span>
+            <input id="operator" type="text" autocomplete="name" placeholder="Recepción 1">
+          </label>
+          <label class="field">
+            <span>Día de check-in</span>
+            <select id="day">
+              <option value="jueves">Jueves 2 de julio</option>
+              <option value="viernes">Viernes 3 de julio</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Cámara</span>
+            <select id="cameraSelect">
+              <option value="">Detectar al iniciar</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="actions">
+          <button id="startBtn" class="btn btn--primary">Entrar en modo recepción</button>
+          <button id="testApiBtn" class="btn btn--ghost" type="button">Probar API</button>
+        </div>
+        <p class="helpText">El PIN se guarda solo durante esta sesión. El operador, el día y la cámara se recuerdan en este dispositivo. La API queda configurada internamente en config.js.</p>
+      </section>
+
+      <section id="appPanel" class="appPanel hidden">
+        <div class="topbar card">
+          <div>
+            <p class="eyebrow">Modo recepción</p>
+            <h2 id="currentDayLabel">Jueves 2 de julio</h2>
+          </div>
+          <div class="topbar__actions">
+            <button id="switchDayBtn" class="btn btn--ghost" type="button">Cambiar día</button>
+            <button id="settingsBtn" class="btn btn--ghost" type="button">Ajustes</button>
+          </div>
+        </div>
+
+        <div class="dashboard">
+          <article class="card scannerCard">
+            <div class="sectionTitle">
+              <div>
+                <p class="eyebrow">Escáner QR</p>
+                <h2>Mostrar acreditación</h2>
+              </div>
+              <span id="scannerState" class="badge badge--muted">parado</span>
+            </div>
+
+            <div id="reader" class="reader" aria-label="Visor de cámara para escanear QR">
+              <div class="readerFallback">
+                <div class="scanIcon" aria-hidden="true"></div>
+                <p>La cámara aparecerá aquí</p>
+              </div>
+            </div>
+
+            <div class="actions actions--compact">
+              <button id="scanToggleBtn" class="btn btn--primary" type="button">Activar cámara</button>
+              <button id="clearBtn" class="btn btn--ghost" type="button">Limpiar</button>
+            </div>
+
+            <div class="manualBox">
+              <label class="field">
+                <span>Buscar o introducir código</span>
+                <div class="inputAction">
+                  <input id="manualInput" type="text" autocomplete="off" placeholder="XJ-BIRTLH-0001-DEMO2026 o apellidos">
+                  <button id="manualBtn" class="btn btn--secondary" type="button">Buscar</button>
+                </div>
+              </label>
+              <div id="searchResults" class="searchResults" aria-live="polite"></div>
+            </div>
+          </article>
+
+          <article class="card attendeeCard">
+            <div class="sectionTitle">
+              <div>
+                <p class="eyebrow">Asistente</p>
+                <h2>Resultado</h2>
+              </div>
+              <span id="resultBadge" class="badge badge--muted">sin selección</span>
+            </div>
+
+            <div id="emptyState" class="emptyState">
+              <div class="emptyIcon" aria-hidden="true"></div>
+              <h3>Escanea un QR o busca por apellido</h3>
+              <p>Al encontrar una inscripción, aquí aparecerán los datos básicos y los botones de registro.</p>
+            </div>
+
+            <div id="attendeeView" class="attendeeView hidden">
+              <div class="attendeeHeader">
+                <div>
+                  <h3 id="attendeeName"></h3>
+                  <p id="attendeeInstitution"></p>
+                </div>
+                <span id="attendeeCode" class="codePill"></span>
+              </div>
+
+              <div class="checkStatus">
+                <div id="juevesStatus" class="statusCard">
+                  <span>Jueves 2</span>
+                  <strong>Pendiente</strong>
+                  <small></small>
+                </div>
+                <div id="viernesStatus" class="statusCard">
+                  <span>Viernes 3</span>
+                  <strong>Pendiente</strong>
+                  <small></small>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button id="checkinBtn" class="btn btn--success" type="button">Registrar día seleccionado</button>
+                <button id="continueBtn" class="btn btn--primary" type="button">Siguiente asistente</button>
+              </div>
+            </div>
+
+            <div id="message" class="message hidden" role="status" aria-live="polite"></div>
+          </article>
+        </div>
+
+        <section class="card summaryCard">
+          <div class="summaryItem">
+            <span>Total</span>
+            <strong id="sumTotal">—</strong>
+          </div>
+          <div class="summaryItem">
+            <span>Jueves</span>
+            <strong id="sumJueves">—</strong>
+          </div>
+          <div class="summaryItem">
+            <span>Viernes</span>
+            <strong id="sumViernes">—</strong>
+          </div>
+          <button id="refreshSummaryBtn" class="btn btn--ghost" type="button">Actualizar resumen</button>
+        </section>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
